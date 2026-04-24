@@ -1,0 +1,327 @@
+
+<h2 class="sr-only">Dashboard neon com ranking de produtividade da equipe da manhã</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--neon-g:#00ffaa;--neon-b:#00c3ff;--neon-p:#bf5fff;--bg:#0d0d14;--bg2:#13131f;--bg3:#1a1a28;--border:#ffffff18;--text:#e8e8f0;--muted:#7070a0}
+.wrap{background:var(--bg);border-radius:16px;padding:20px;font-family:var(--font-sans);color:var(--text)}
+.toggle-row{display:flex;gap:8px;margin-bottom:18px}
+.tog-btn{flex:1;padding:9px 0;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:10px;background:var(--bg2);color:var(--muted);cursor:pointer;transition:all .3s;letter-spacing:.03em}
+.tog-btn.active-g{background:linear-gradient(135deg,#00ffaa22,#00c3ff22);border-color:#00ffaa88;color:var(--neon-g);text-shadow:0 0 8px #00ffaaaa}
+.tog-btn.active-b{background:linear-gradient(135deg,#00c3ff22,#bf5fff22);border-color:#00c3ff88;color:var(--neon-b);text-shadow:0 0 8px #00c3ffaa}
+.section{display:none}.section.show{display:block}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:18px}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;position:relative;overflow:hidden;transition:border-color .3s}
+.metric::before{content:'';position:absolute;inset:0;opacity:.06;border-radius:12px}
+.metric.g::before{background:linear-gradient(135deg,var(--neon-g),var(--neon-b))}
+.metric.b::before{background:linear-gradient(135deg,var(--neon-b),var(--neon-p))}
+.metric-label{font-size:10px;color:var(--muted);margin-bottom:3px;letter-spacing:.04em}
+.metric-value{font-size:22px;font-weight:500}
+.metric-value.g{background:linear-gradient(90deg,var(--neon-g),var(--neon-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.metric-value.b{background:linear-gradient(90deg,var(--neon-b),var(--neon-p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.metric-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.compare-block{margin-bottom:14px}
+.compare-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+.compare-pct.g{color:var(--neon-g);text-shadow:0 0 6px #00ffaa66}
+.compare-pct.b{color:var(--neon-b);text-shadow:0 0 6px #00c3ff66}
+.split-track{height:18px;background:var(--bg3);border-radius:99px;overflow:hidden;display:flex;border:1px solid var(--border)}
+.split-manha{height:100%;width:0;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+.split-manha.g{background:linear-gradient(90deg,var(--neon-g),var(--neon-b))}
+.split-manha.b{background:linear-gradient(90deg,var(--neon-b),var(--neon-p))}
+.split-rest{flex:1}
+.legend-row{display:flex;gap:14px;margin-top:4px;font-size:10px;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:2px;display:inline-block;margin-right:3px}
+.dot.g{background:linear-gradient(90deg,var(--neon-g),var(--neon-b))}
+.dot.b{background:linear-gradient(90deg,var(--neon-b),var(--neon-p))}
+.dot.rest{background:var(--bg3);border:1px solid var(--border)}
+.pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:99px;margin-right:4px;margin-bottom:4px}
+.pill.g{background:#00ffaa18;color:var(--neon-g);border:1px solid #00ffaa44}
+.pill.b{background:#00c3ff18;color:var(--neon-b);border:1px solid #00c3ff44}
+
+/* TABS */
+.view-tabs{display:flex;gap:6px;margin-bottom:14px}
+.vtab{font-size:11px;padding:5px 14px;border-radius:99px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s}
+.vtab.on.g{background:#00ffaa22;border-color:#00ffaa66;color:var(--neon-g)}
+.vtab.on.b{background:#00c3ff22;border-color:#00c3ff66;color:var(--neon-b)}
+.view{display:none}.view.show{display:block}
+
+/* RANK */
+.rank-sort{display:flex;gap:6px;margin-bottom:12px;align-items:center}
+.rank-sort span{font-size:10px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.sort-btn{font-size:10px;padding:3px 10px;border-radius:99px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s}
+.sort-btn.on.g{background:#00ffaa18;border-color:#00ffaa55;color:var(--neon-g)}
+.sort-btn.on.b{background:#00c3ff18;border-color:#00c3ff55;color:var(--neon-b)}
+.rank-list{display:flex;flex-direction:column;gap:7px}
+.rank-row{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s,background .2s}
+.rank-row:hover{border-color:#ffffff25;background:var(--bg3)}
+.rank-row.open.g{border-color:var(--neon-g);background:linear-gradient(160deg,#00ffaa0d,#0d0d14)}
+.rank-row.open.b{border-color:var(--neon-b);background:linear-gradient(160deg,#00c3ff0d,#0d0d14)}
+.rank-pos{font-size:16px;font-weight:500;min-width:26px;text-align:center}
+.rank-pos.p1{background:linear-gradient(90deg,#ffd700,#ffaa00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.rank-pos.p2{background:linear-gradient(90deg,#c0c0c0,#a0a0a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.rank-pos.p3{background:linear-gradient(90deg,#cd7f32,#a0522d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.rank-pos.pN{color:var(--muted)}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-bar-wrap{margin-top:5px;height:4px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.rank-bar{height:100%;width:0;border-radius:99px;transition:width .9s cubic-bezier(.4,0,.2,1)}
+.rank-bar.g{background:linear-gradient(90deg,var(--neon-g),var(--neon-b))}
+.rank-bar.b{background:linear-gradient(90deg,var(--neon-b),var(--neon-p))}
+.rank-val{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap}
+.rank-pct{font-size:10px;color:var(--muted);text-align:right;margin-top:1px}
+.rank-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.rank-row.open .rank-detail{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rank-row.open .chevron{transform:rotate(180deg)}
+.chevron{font-size:9px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.stat-box{background:var(--bg3);border-radius:8px;padding:7px 10px}
+.stat-box-label{font-size:10px;color:var(--muted);margin-bottom:2px}
+.stat-box-val{font-size:15px;font-weight:500}
+.stat-box-val.g{background:linear-gradient(90deg,var(--neon-g),var(--neon-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-box-val.b{background:linear-gradient(90deg,var(--neon-b),var(--neon-p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-box-sub{font-size:10px;color:var(--muted);margin-top:1px}
+</style>
+
+<div class="wrap">
+  <div class="toggle-row">
+    <button class="tog-btn active-g" id="btn-sep" onclick="sw('sep')">⬡ Separação</button>
+    <button class="tog-btn" id="btn-conf" onclick="sw('conf')">⬡ Conferência</button>
+  </div>
+
+  <!-- SEPARAÇÃO -->
+  <div class="section show" id="sec-sep">
+    <div style="margin-bottom:12px;display:flex;flex-wrap:wrap">
+      <span class="pill g">MARTA</span><span class="pill g">VANESSA GOMES</span><span class="pill g">JOSE LUIZ</span><span class="pill g">THALITA SOARES</span><span class="pill g">DEVANIR</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric g"><div class="metric-label">Pedidos manhã</div><div class="metric-value g"><span id="s-ped">0</span></div><div class="metric-sub">de 4.549 total</div></div>
+      <div class="metric g"><div class="metric-label">% pedidos</div><div class="metric-value g"><span id="s-pp">0</span>%</div></div>
+      <div class="metric g"><div class="metric-label">Itens manhã</div><div class="metric-value g"><span id="s-ite">0</span></div><div class="metric-sub">de 69.451 total</div></div>
+      <div class="metric g"><div class="metric-label">% itens</div><div class="metric-value g"><span id="s-ip">0</span>%</div></div>
+    </div>
+    <div class="compare-block">
+      <div class="compare-label"><span>Pedidos — manhã vs total</span><span class="compare-pct g"><span id="s-pp2">0</span>%</span></div>
+      <div class="split-track"><div class="split-manha g" id="sb-sp"></div><div class="split-rest"></div></div>
+      <div class="legend-row"><span><span class="dot g"></span>Manhã</span><span><span class="dot rest"></span>Demais</span></div>
+    </div>
+    <div class="compare-block">
+      <div class="compare-label"><span>Itens — manhã vs total</span><span class="compare-pct g"><span id="s-ip2">0</span>%</span></div>
+      <div class="split-track"><div class="split-manha g" id="sb-si"></div><div class="split-rest"></div></div>
+    </div>
+    <div class="view-tabs">
+      <button class="vtab on g" id="vt-sep-rank" onclick="setView('sep','rank')">Ranking</button>
+      <button class="vtab g" id="vt-sep-cards" onclick="setView('sep','cards')">Cards</button>
+    </div>
+    <div class="view show" id="vw-sep-rank">
+      <div class="rank-sort">
+        <span>Ordenar por</span>
+        <button class="sort-btn on g" id="ss-ped" onclick="sortRank('sep','p')">Pedidos</button>
+        <button class="sort-btn g" id="ss-ite" onclick="sortRank('sep','i')">Itens</button>
+      </div>
+      <div class="rank-list" id="rank-sep"></div>
+    </div>
+    <div class="view" id="vw-sep-cards">
+      <div class="rank-list" id="cards-sep"></div>
+    </div>
+  </div>
+
+  <!-- CONFERÊNCIA -->
+  <div class="section" id="sec-conf">
+    <div style="margin-bottom:12px;display:flex;flex-wrap:wrap">
+      <span class="pill b">MARTA</span><span class="pill b">VANESSA GOMES</span><span class="pill b">JOSE LUIZ</span><span class="pill b">THALITA SOARES</span><span class="pill b">LAUDICEIA</span><span class="pill b">GENEILDA</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric b"><div class="metric-label">Pedidos manhã</div><div class="metric-value b"><span id="c-ped">0</span></div><div class="metric-sub">de 4.764 total</div></div>
+      <div class="metric b"><div class="metric-label">% pedidos</div><div class="metric-value b"><span id="c-pp">0</span>%</div></div>
+      <div class="metric b"><div class="metric-label">Itens manhã</div><div class="metric-value b"><span id="c-ite">0</span></div><div class="metric-sub">de 68.900 total</div></div>
+      <div class="metric b"><div class="metric-label">% itens</div><div class="metric-value b"><span id="c-ip">0</span>%</div></div>
+    </div>
+    <div class="compare-block">
+      <div class="compare-label"><span>Pedidos — manhã vs total</span><span class="compare-pct b"><span id="c-pp2">0</span>%</span></div>
+      <div class="split-track"><div class="split-manha b" id="sb-cp"></div><div class="split-rest"></div></div>
+      <div class="legend-row"><span><span class="dot b"></span>Manhã</span><span><span class="dot rest"></span>Demais</span></div>
+    </div>
+    <div class="compare-block">
+      <div class="compare-label"><span>Itens — manhã vs total</span><span class="compare-pct b"><span id="c-ip2">0</span>%</span></div>
+      <div class="split-track"><div class="split-manha b" id="sb-ci"></div><div class="split-rest"></div></div>
+    </div>
+    <div class="view-tabs">
+      <button class="vtab on b" id="vt-conf-rank" onclick="setView('conf','rank')">Ranking</button>
+      <button class="vtab b" id="vt-conf-cards" onclick="setView('conf','cards')">Cards</button>
+    </div>
+    <div class="view show" id="vw-conf-rank">
+      <div class="rank-sort">
+        <span>Ordenar por</span>
+        <button class="sort-btn on b" id="cs-ped" onclick="sortRank('conf','p')">Pedidos</button>
+        <button class="sort-btn b" id="cs-ite" onclick="sortRank('conf','i')">Itens</button>
+      </div>
+      <div class="rank-list" id="rank-conf"></div>
+    </div>
+    <div class="view" id="vw-conf-cards">
+      <div class="rank-list" id="cards-conf"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SD={tot:{p:4549,i:69451},m:[{n:'MARTA',p:34,i:370},{n:'VANESSA GOMES',p:24,i:440},{n:'JOSE LUIZ',p:33,i:325},{n:'THALITA SOARES',p:38,i:366},{n:'DEVANIR',p:12,i:178}]};
+const CD={tot:{p:4764,i:68900},m:[{n:'MARTA',p:78,i:785},{n:'VANESSA GOMES',p:47,i:474},{n:'JOSE LUIZ',p:79,i:830},{n:'THALITA SOARES',p:38,i:364},{n:'LAUDICEIA',p:11,i:62},{n:'GENEILDA',p:3,i:4}]};
+const sortState={sep:'p',conf:'p'};
+
+function sum(arr,k){return arr.reduce((a,b)=>a+b[k],0)}
+function animCount(el,target,dur,dec){
+  const s=performance.now();
+  function f(now){const p=Math.min((now-s)/dur,1),e=1-Math.pow(1-p,3),v=target*e;el.textContent=dec?v.toFixed(dec):Math.round(v).toLocaleString('pt-BR');if(p<1)requestAnimationFrame(f);}
+  requestAnimationFrame(f);
+}
+function posClass(i){return['p1','p2','p3'][i]||'pN'}
+function medal(i){return['🥇','🥈','🥉'][i]||`#${i+1}`}
+
+function buildRank(sec,data,cls,sortKey){
+  const sorted=[...data.m].sort((a,b)=>b[sortKey]-a[sortKey]);
+  const maxVal=sorted[0][sortKey];
+  document.getElementById(`rank-${sec}`).innerHTML=sorted.map((c,i)=>{
+    const pPed=(c.p/data.tot.p*100).toFixed(1),pIte=(c.i/data.tot.i*100).toFixed(1);
+    const barW=Math.round(c[sortKey]/maxVal*100);
+    const posC=posClass(i);
+    return`<div class="rank-row" id="rr-${sec}-${i}" onclick="togRank('${sec}',${i},'${cls}')">
+      <div class="rank-pos ${posC}">${medal(i)}</div>
+      <div class="rank-info">
+        <div class="rank-name">${c.n}</div>
+        <div class="rank-bar-wrap"><div class="rank-bar ${cls}" style="width:0" data-w="${barW}" id="rb-${sec}-${i}"></div></div>
+      </div>
+      <div>
+        <div class="rank-val">${c[sortKey].toLocaleString('pt-BR')}</div>
+        <div class="rank-pct">${sortKey==='p'?pPed:pIte}% total</div>
+      </div>
+      <span class="chevron">▼</span>
+      <div class="rank-detail">
+        <div class="stat-box"><div class="stat-box-label">Pedidos</div><div class="stat-box-val ${cls}">${c.p}</div><div class="stat-box-sub">${pPed}% do total</div></div>
+        <div class="stat-box"><div class="stat-box-label">Itens</div><div class="stat-box-val ${cls}">${c.i.toLocaleString('pt-BR')}</div><div class="stat-box-sub">${pIte}% do total</div></div>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{
+    sorted.forEach((_,i)=>{
+      const rb=document.getElementById(`rb-${sec}-${i}`);
+      if(rb)setTimeout(()=>{rb.style.width=rb.dataset.w+'%'},i*60);
+    });
+  },100);
+}
+
+function buildCards(cid,data,cls){
+  const mp=sum(data.m,'p'),mi=sum(data.m,'i');
+  const avgP=mp/data.m.length,avgI=mi/data.m.length;
+  const maxP=Math.max(...data.m.map(d=>d.p)),maxI=Math.max(...data.m.map(d=>d.i));
+  document.getElementById(cid).innerHTML=data.m.map((c,i)=>{
+    const wP=Math.round(c.p/maxP*100),wI=Math.round(c.i/maxI*100);
+    const aP=Math.round(avgP/maxP*100),aI=Math.round(avgI/maxI*100);
+    const pP=(c.p/data.tot.p*100).toFixed(1),pI=(c.i/data.tot.i*100).toFixed(1);
+    return`<div class="rank-row" id="cc-${cls}-${i}" onclick="togCard('${cls}',${i})">
+      <div class="rank-info">
+        <div class="rank-name">${c.n}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${c.p} ped. · ${c.i.toLocaleString('pt-BR')} itens</div>
+      </div>
+      <span class="chevron">▼</span>
+      <div class="rank-detail" style="grid-column:1/-1">
+        <div class="stat-box">
+          <div class="stat-box-label">Pedidos — ${pP}% total</div>
+          <div style="height:5px;background:var(--bg);border-radius:99px;overflow:hidden;position:relative;margin-top:4px">
+            <div class="rank-bar ${cls}" style="width:0" data-w="${wP}" id="mp-${cls}-${i}"></div>
+            <div style="position:absolute;top:0;left:${aP}%;height:100%;width:2px;background:#ffffff40"></div>
+          </div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">linha = média</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-label">Itens — ${pI}% total</div>
+          <div style="height:5px;background:var(--bg);border-radius:99px;overflow:hidden;position:relative;margin-top:4px">
+            <div class="rank-bar ${cls}" style="width:0" data-w="${wI}" id="mi-${cls}-${i}"></div>
+            <div style="position:absolute;top:0;left:${aI}%;height:100%;width:2px;background:#ffffff40"></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togRank(sec,i,cls){
+  const rows=document.querySelectorAll(`#rank-${sec} .rank-row`);
+  const row=document.getElementById(`rr-${sec}-${i}`);
+  const wasOpen=row.classList.contains('open');
+  rows.forEach(r=>r.classList.remove('open'));
+  if(!wasOpen){row.classList.add('open',cls);}
+}
+
+function togCard(cls,i){
+  const card=document.getElementById(`cc-${cls}-${i}`);
+  const wasOpen=card.classList.contains('open');
+  document.querySelectorAll(`#cards-${cls==='g'?'sep':'conf'} .rank-row`).forEach(c=>c.classList.remove('open'));
+  if(!wasOpen){
+    card.classList.add('open',cls);
+    setTimeout(()=>{
+      const mp=document.getElementById(`mp-${cls}-${i}`);
+      const mi=document.getElementById(`mi-${cls}-${i}`);
+      if(mp)mp.style.width=mp.dataset.w+'%';
+      if(mi)mi.style.width=mi.dataset.w+'%';
+    },30);
+  }
+}
+
+function sortRank(sec,key){
+  sortState[sec]=key;
+  const cls=sec==='sep'?'g':'b';
+  const data=sec==='sep'?SD:CD;
+  if(sec==='sep'){
+    document.getElementById('ss-ped').className='sort-btn'+(key==='p'?' on g':' g');
+    document.getElementById('ss-ite').className='sort-btn'+(key==='i'?' on g':' g');
+  } else {
+    document.getElementById('cs-ped').className='sort-btn'+(key==='p'?' on b':' b');
+    document.getElementById('cs-ite').className='sort-btn'+(key==='i'?' on b':' b');
+  }
+  buildRank(sec,data,cls,key);
+}
+
+function setView(sec,view){
+  const cls=sec==='sep'?'g':'b';
+  ['rank','cards'].forEach(v=>{
+    document.getElementById(`vw-${sec}-${v}`).classList.toggle('show',v===view);
+    const btn=document.getElementById(`vt-${sec}-${v}`);
+    btn.className=`vtab${v===view?' on ':' '}${cls}`;
+  });
+}
+
+function runAnim(tab){
+  if(tab==='sep'){
+    const mp=sum(SD.m,'p'),mi=sum(SD.m,'i');
+    const pp=(mp/SD.tot.p*100),pi=(mi/SD.tot.i*100);
+    animCount(document.getElementById('s-ped'),mp,700,0);
+    animCount(document.getElementById('s-pp'),pp,800,1);
+    animCount(document.getElementById('s-ite'),mi,700,0);
+    animCount(document.getElementById('s-ip'),pi,800,1);
+    animCount(document.getElementById('s-pp2'),pp,800,1);
+    animCount(document.getElementById('s-ip2'),pi,800,1);
+    setTimeout(()=>{document.getElementById('sb-sp').style.width=pp+'%';document.getElementById('sb-si').style.width=pi+'%';},100);
+  } else {
+    const mp=sum(CD.m,'p'),mi=sum(CD.m,'i');
+    const pp=(mp/CD.tot.p*100),pi=(mi/CD.tot.i*100);
+    animCount(document.getElementById('c-ped'),mp,700,0);
+    animCount(document.getElementById('c-pp'),pp,800,1);
+    animCount(document.getElementById('c-ite'),mi,700,0);
+    animCount(document.getElementById('c-ip'),pi,800,1);
+    animCount(document.getElementById('c-pp2'),pp,800,1);
+    animCount(document.getElementById('c-ip2'),pi,800,1);
+    setTimeout(()=>{document.getElementById('sb-cp').style.width=pp+'%';document.getElementById('sb-ci').style.width=pi+'%';},100);
+  }
+}
+
+function sw(tab){
+  ['sep','conf'].forEach(t=>{document.getElementById('sec-'+t).classList.toggle('show',t===tab);});
+  document.getElementById('btn-sep').className='tog-btn'+(tab==='sep'?' active-g':'');
+  document.getElementById('btn-conf').className='tog-btn'+(tab==='conf'?' active-b':'');
+  runAnim(tab);
+}
+
+buildRank('sep',SD,'g','p');
+buildRank('conf',CD,'b','p');
+buildCards('cards-sep',SD,'g');
+buildCards('cards-conf',CD,'b');
+setTimeout(()=>runAnim('sep'),200);
+</script>
