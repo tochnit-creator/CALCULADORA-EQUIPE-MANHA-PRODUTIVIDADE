@@ -1,9 +1,14 @@
 
-<h2 class="sr-only">Dashboard neon com ranking por pontos — pedidos + itens</h2>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--neon-g:#00ffaa;--neon-b:#00c3ff;--neon-p:#bf5fff;--bg:#0d0d14;--bg2:#13131f;--bg3:#1a1a28;--border:#ffffff18;--text:#e8e8f0;--muted:#7070a0}
 .wrap{background:var(--bg);border-radius:16px;padding:20px;font-family:var(--font-sans);color:var(--text)}
+
+/* HEADER */
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.dash-title{font-size:15px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:linear-gradient(90deg,var(--neon-g),var(--neon-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.dash-badge{font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px}
+
 .toggle-row{display:flex;gap:8px;margin-bottom:18px}
 .tog-btn{flex:1;padding:9px 0;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:10px;background:var(--bg2);color:var(--muted);cursor:pointer;transition:all .3s}
 .tog-btn.active-g{background:linear-gradient(135deg,#00ffaa22,#00c3ff22);border-color:#00ffaa88;color:var(--neon-g);text-shadow:0 0 8px #00ffaaaa}
@@ -36,13 +41,10 @@
 .pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:99px;margin-right:4px;margin-bottom:4px}
 .pill.g{background:#00ffaa18;color:var(--neon-g);border:1px solid #00ffaa44}
 .pill.b{background:#00c3ff18;color:var(--neon-b);border:1px solid #00c3ff44}
-
-/* RANK */
 .rank-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .rank-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
-.rank-formula{font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px}
-.rank-formula span.g{color:var(--neon-g)}
-.rank-formula span.b{color:var(--neon-b)}
+.rank-formula.g{font-size:10px;color:var(--neon-g);background:#00ffaa0f;border:1px solid #00ffaa33;border-radius:6px;padding:3px 8px}
+.rank-formula.b{font-size:10px;color:var(--neon-b);background:#00c3ff0f;border:1px solid #00c3ff33;border-radius:6px;padding:3px 8px}
 .rank-list{display:flex;flex-direction:column;gap:6px}
 .rank-row{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden}
 .rank-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
@@ -54,9 +56,6 @@
 .rank-row.open.b{border-color:var(--neon-b);background:linear-gradient(160deg,#00c3ff0d,#0d0d14)}
 .rank-top{display:flex;align-items:center;gap:10px}
 .rank-pos{font-size:18px;min-width:28px;text-align:center;flex-shrink:0}
-.rank-pos.p1{filter:drop-shadow(0 0 6px #ffd70099)}
-.rank-pos.p2{filter:drop-shadow(0 0 4px #c0c0c066)}
-.rank-pos.p3{filter:drop-shadow(0 0 4px #cd7f3266)}
 .rank-info{flex:1;min-width:0}
 .rank-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
 .rank-bar-wrap{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden}
@@ -78,11 +77,15 @@
 .dbox-val.g{background:linear-gradient(90deg,var(--neon-g),var(--neon-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .dbox-val.b{background:linear-gradient(90deg,var(--neon-b),var(--neon-p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .dbox-sub{font-size:9px;color:var(--muted);margin-top:2px}
-.formula-hint{font-size:10px;color:var(--muted);text-align:center;margin-top:4px}
-.formula-hint b{color:var(--text)}
 </style>
 
 <div class="wrap">
+
+  <div class="dash-header">
+    <span class="dash-title">Produtividade Manhã</span>
+    <span class="dash-badge">Equipe manhã</span>
+  </div>
+
   <div class="toggle-row">
     <button class="tog-btn active-g" id="btn-sep" onclick="sw('sep')">⬡ Separação</button>
     <button class="tog-btn" id="btn-conf" onclick="sw('conf')">⬡ Conferência</button>
@@ -110,7 +113,7 @@
     </div>
     <div class="rank-header">
       <span class="rank-title">Ranking</span>
-      <span class="rank-formula"><span class="g">pedidos + itens = pontos</span></span>
+      <span class="rank-formula g">pedidos + itens = pontos</span>
     </div>
     <div class="rank-list" id="rank-sep"></div>
   </div>
@@ -137,40 +140,34 @@
     </div>
     <div class="rank-header">
       <span class="rank-title">Ranking</span>
-      <span class="rank-formula"><span class="b">pedidos + itens = pontos</span></span>
+      <span class="rank-formula b">pedidos + itens = pontos</span>
     </div>
     <div class="rank-list" id="rank-conf"></div>
   </div>
+
 </div>
 
 <script>
 const SD={tot:{p:4549,i:69451},m:[{n:'MARTA',p:34,i:370},{n:'VANESSA GOMES',p:24,i:440},{n:'JOSE LUIZ',p:33,i:325},{n:'THALITA SOARES',p:38,i:366},{n:'DEVANIR',p:12,i:178}]};
 const CD={tot:{p:4764,i:68900},m:[{n:'MARTA',p:78,i:785},{n:'VANESSA GOMES',p:47,i:474},{n:'JOSE LUIZ',p:79,i:830},{n:'THALITA SOARES',p:38,i:364},{n:'LAUDICEIA',p:11,i:62},{n:'GENEILDA',p:3,i:4}]};
-
 function sum(arr,k){return arr.reduce((a,b)=>a+b[k],0)}
-function animCount(el,target,dur,dec){
-  const s=performance.now();
-  function f(now){const p=Math.min((now-s)/dur,1),e=1-Math.pow(1-p,3),v=target*e;el.textContent=dec?v.toFixed(dec):Math.round(v).toLocaleString('pt-BR');if(p<1)requestAnimationFrame(f);}
-  requestAnimationFrame(f);
-}
+function animCount(el,target,dur,dec){const s=performance.now();function f(now){const p=Math.min((now-s)/dur,1),e=1-Math.pow(1-p,3),v=target*e;el.textContent=dec?v.toFixed(dec):Math.round(v).toLocaleString('pt-BR');if(p<1)requestAnimationFrame(f);}requestAnimationFrame(f);}
 function medal(i){return['🥇','🥈','🥉'][i]||`#${i+1}`}
 function posClass(i){return['p1','p2','p3'][i]||''}
-
 function buildRank(sec,data,cls){
   const sorted=[...data.m].map(c=>({...c,score:c.p+c.i})).sort((a,b)=>b.score-a.score);
   const maxScore=sorted[0].score;
   document.getElementById(`rank-${sec}`).innerHTML=sorted.map((c,i)=>{
-    const barW=Math.round(c.score/maxScore*100);
-    const pPed=(c.p/data.tot.p*100).toFixed(1);
-    const pIte=(c.i/data.tot.i*100).toFixed(1);
+    const bw=Math.round(c.score/maxScore*100);
+    const pP=(c.p/data.tot.p*100).toFixed(1),pI=(c.i/data.tot.i*100).toFixed(1);
     const pc=posClass(i);
     return`<div class="rank-row${pc?' '+pc:''}" id="rr-${sec}-${i}" onclick="togRank('${sec}',${i},'${cls}')">
       <span class="chevron">▼</span>
       <div class="rank-top">
-        <div class="rank-pos${pc?' '+pc:''}"><span>${medal(i)}</span></div>
+        <div class="rank-pos">${medal(i)}</div>
         <div class="rank-info">
           <div class="rank-name">${c.n}</div>
-          <div class="rank-bar-wrap"><div class="rank-bar ${cls}" style="width:0" data-w="${barW}" id="rb-${sec}-${i}"></div></div>
+          <div class="rank-bar-wrap"><div class="rank-bar ${cls}" style="width:0" data-w="${bw}" id="rb-${sec}-${i}"></div></div>
         </div>
         <div class="rank-score-wrap">
           <div class="rank-score ${cls}">${c.score.toLocaleString('pt-BR')}</div>
@@ -178,72 +175,44 @@ function buildRank(sec,data,cls){
         </div>
       </div>
       <div class="rank-detail">
-        <div class="dbox">
-          <div class="dbox-label">Pedidos</div>
-          <div class="dbox-val ${cls}">${c.p}</div>
-          <div class="dbox-sub">${pPed}% total</div>
-        </div>
-        <div class="dbox">
-          <div class="dbox-label">Itens</div>
-          <div class="dbox-val ${cls}">${c.i.toLocaleString('pt-BR')}</div>
-          <div class="dbox-sub">${pIte}% total</div>
-        </div>
-        <div class="dbox" style="background:transparent;border:1px solid var(--border)">
-          <div class="dbox-label">Fórmula</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.p} + ${c.i.toLocaleString('pt-BR')}</div>
-          <div class="dbox-val ${cls}" style="font-size:13px;margin-top:4px">= ${c.score.toLocaleString('pt-BR')}</div>
-        </div>
+        <div class="dbox"><div class="dbox-label">Pedidos</div><div class="dbox-val ${cls}">${c.p}</div><div class="dbox-sub">${pP}% total</div></div>
+        <div class="dbox"><div class="dbox-label">Itens</div><div class="dbox-val ${cls}">${c.i.toLocaleString('pt-BR')}</div><div class="dbox-sub">${pI}% total</div></div>
+        <div class="dbox" style="border:1px solid var(--border);background:transparent"><div class="dbox-label">Fórmula</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${c.p} + ${c.i.toLocaleString('pt-BR')}</div><div class="dbox-val ${cls}" style="font-size:13px;margin-top:3px">= ${c.score.toLocaleString('pt-BR')}</div></div>
       </div>
     </div>`;
   }).join('');
-  setTimeout(()=>{
-    sorted.forEach((_,i)=>{
-      const rb=document.getElementById(`rb-${sec}-${i}`);
-      if(rb)setTimeout(()=>{rb.style.width=rb.dataset.w+'%'},i*80);
-    });
-  },150);
+  setTimeout(()=>{sorted.forEach((_,i)=>{const rb=document.getElementById(`rb-${sec}-${i}`);if(rb)setTimeout(()=>{rb.style.width=rb.dataset.w+'%'},i*80);});},150);
 }
-
 function togRank(sec,i,cls){
   const rows=document.querySelectorAll(`#rank-${sec} .rank-row`);
   const row=document.getElementById(`rr-${sec}-${i}`);
   const wasOpen=row.classList.contains('open');
   rows.forEach(r=>r.classList.remove('open','g','b'));
-  if(!wasOpen) row.classList.add('open',cls);
+  if(!wasOpen)row.classList.add('open',cls);
 }
-
 function runAnim(tab){
   if(tab==='sep'){
     const mp=sum(SD.m,'p'),mi=sum(SD.m,'i');
     const pp=mp/SD.tot.p*100,pi=mi/SD.tot.i*100;
-    animCount(document.getElementById('s-ped'),mp,700,0);
-    animCount(document.getElementById('s-pp'),pp,800,1);
-    animCount(document.getElementById('s-ite'),mi,700,0);
-    animCount(document.getElementById('s-ip'),pi,800,1);
-    animCount(document.getElementById('s-pp2'),pp,800,1);
-    animCount(document.getElementById('s-ip2'),pi,800,1);
+    animCount(document.getElementById('s-ped'),mp,700,0);animCount(document.getElementById('s-pp'),pp,800,1);
+    animCount(document.getElementById('s-ite'),mi,700,0);animCount(document.getElementById('s-ip'),pi,800,1);
+    animCount(document.getElementById('s-pp2'),pp,800,1);animCount(document.getElementById('s-ip2'),pi,800,1);
     setTimeout(()=>{document.getElementById('sb-sp').style.width=pp+'%';document.getElementById('sb-si').style.width=pi+'%';},100);
   } else {
     const mp=sum(CD.m,'p'),mi=sum(CD.m,'i');
     const pp=mp/CD.tot.p*100,pi=mi/CD.tot.i*100;
-    animCount(document.getElementById('c-ped'),mp,700,0);
-    animCount(document.getElementById('c-pp'),pp,800,1);
-    animCount(document.getElementById('c-ite'),mi,700,0);
-    animCount(document.getElementById('c-ip'),pi,800,1);
-    animCount(document.getElementById('c-pp2'),pp,800,1);
-    animCount(document.getElementById('c-ip2'),pi,800,1);
+    animCount(document.getElementById('c-ped'),mp,700,0);animCount(document.getElementById('c-pp'),pp,800,1);
+    animCount(document.getElementById('c-ite'),mi,700,0);animCount(document.getElementById('c-ip'),pi,800,1);
+    animCount(document.getElementById('c-pp2'),pp,800,1);animCount(document.getElementById('c-ip2'),pi,800,1);
     setTimeout(()=>{document.getElementById('sb-cp').style.width=pp+'%';document.getElementById('sb-ci').style.width=pi+'%';},100);
   }
 }
-
 function sw(tab){
   ['sep','conf'].forEach(t=>{document.getElementById('sec-'+t).classList.toggle('show',t===tab);});
   document.getElementById('btn-sep').className='tog-btn'+(tab==='sep'?' active-g':'');
   document.getElementById('btn-conf').className='tog-btn'+(tab==='conf'?' active-b':'');
   runAnim(tab);
 }
-
-buildRank('sep',SD,'g');
-buildRank('conf',CD,'b');
+buildRank('sep',SD,'g');buildRank('conf',CD,'b');
 setTimeout(()=>runAnim('sep'),200);
 </script>
